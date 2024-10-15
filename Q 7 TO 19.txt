@@ -1,0 +1,261 @@
+CREATE TABLE EMPLOYEE (
+    ID NUMBER PRIMARY KEY,
+    NAME VARCHAR2(100),
+    SALARY NUMBER,
+    DEPNO NUMBER,
+    BDATE DATE
+);
+
+INSERT INTO EMPLOYEE (ID, NAME, SALARY, DEPNO, BDATE) VALUES (1, 'John Doe', 75000, 10, TO_DATE('1990-05-15', 'YYYY-MM-DD'));
+INSERT INTO EMPLOYEE (ID, NAME, SALARY, DEPNO, BDATE) VALUES (2, 'Jane Smith', 80000, 20, TO_DATE('1985-08-20', 'YYYY-MM-DD'));
+INSERT INTO EMPLOYEE (ID, NAME, SALARY, DEPNO, BDATE) VALUES (3, 'Alice Johnson', 60000, 10, TO_DATE('1992-03-10', 'YYYY-MM-DD'));
+INSERT INTO EMPLOYEE (ID, NAME, SALARY, DEPNO, BDATE) VALUES (4, 'Bob Brown', 55000, 30, TO_DATE('1988-11-25', 'YYYY-MM-DD'));
+INSERT INTO EMPLOYEE (ID, NAME, SALARY, DEPNO, BDATE) VALUES (5, 'Charlie Davis', 95000, 20, TO_DATE('1980-07-30', 'YYYY-MM-DD'));
+INSERT INTO EMPLOYEE (ID, NAME, SALARY, DEPNO, BDATE) VALUES (6, 'David Wilson', 45000, 30, TO_DATE('1995-01-05', 'YYYY-MM-DD'));
+INSERT INTO EMPLOYEE (ID, NAME, SALARY, DEPNO, BDATE) VALUES (7, 'Emma Thompson', 70000, 10, TO_DATE('1993-09-14', 'YYYY-MM-DD'));
+INSERT INTO EMPLOYEE (ID, NAME, SALARY, DEPNO, BDATE) VALUES (8, 'Frank Harris', 60000, 20, TO_DATE('1987-12-02', 'YYYY-MM-DD'));
+INSERT INTO EMPLOYEE (ID, NAME, SALARY, DEPNO, BDATE) VALUES (9, 'Grace Lee', 72000, 30, TO_DATE('1991-06-18', 'YYYY-MM-DD'));
+INSERT INTO EMPLOYEE (ID, NAME, SALARY, DEPNO, BDATE) VALUES (10, 'Hannah Walker', 85000, 10, TO_DATE('1986-04-28', 'YYYY-MM-DD'));
+
+
+
+7: CREATE OR REPLACE PROCEDURE welcome_message IS
+BEGIN
+    DBMS_OUTPUT.PUT_LINE('Welcome to PL/SQL');
+END;
+/
+
+
+8: DECLARE
+    emp_id NUMBER;
+    emp_salary NUMBER;
+BEGIN
+    DBMS_OUTPUT.PUT_LINE('Enter Employee ID:');
+    emp_id := &emp_id;
+
+    SELECT SALARY INTO emp_salary
+    FROM EMPLOYEE
+    WHERE ID = emp_id;
+
+    DBMS_OUTPUT.PUT_LINE('Salary of Employee ID ' || emp_id || ' is: ' || emp_salary);
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('No employee found with ID: ' || emp_id);
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('An error occurred: ' || SQLERRM);
+END;
+/
+
+9: DECLARE
+    emp_id NUMBER;
+    emp_name VARCHAR2(100);
+    emp_bdate DATE;
+BEGIN
+    DBMS_OUTPUT.PUT_LINE('Enter Employee ID:');
+    emp_id := &emp_id;
+
+    SELECT NAME, BDATE INTO emp_name, emp_bdate
+    FROM EMPLOYEE
+    WHERE ID = emp_id;
+
+    DBMS_OUTPUT.PUT_LINE('Employee Name: ' || emp_name || ', Birthdate: ' || TO_CHAR(emp_bdate, 'DD-MON-YYYY'));
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('No employee found with ID: ' || emp_id);
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('An error occurred: ' || SQLERRM);
+END;
+/
+
+
+10: DECLARE
+    emp_id NUMBER;
+    emp_bdate DATE;
+BEGIN
+    DBMS_OUTPUT.PUT_LINE('Enter Employee ID:');
+    emp_id := &emp_id;
+
+    SELECT BDATE INTO emp_bdate
+    FROM EMPLOYEE
+    WHERE ID = emp_id;
+
+    DBMS_OUTPUT.PUT_LINE('Month of Birth: ' || TO_CHAR(emp_bdate, 'MONTH'));
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('No employee found with ID: ' || emp_id);
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('An error occurred: ' || SQLERRM);
+END;
+/
+
+
+11: DECLARE
+    emp_id1 NUMBER;
+    emp_id2 NUMBER;
+    salary1 NUMBER;
+    salary2 NUMBER;
+    salary_diff NUMBER;
+BEGIN
+    DBMS_OUTPUT.PUT_LINE('Enter first Employee ID:');
+    emp_id1 := &emp_id1;
+
+    DBMS_OUTPUT.PUT_LINE('Enter second Employee ID:');
+    emp_id2 := &emp_id2;
+
+    SELECT SALARY INTO salary1
+    FROM EMPLOYEE
+    WHERE ID = emp_id1;
+
+    SELECT SALARY INTO salary2
+    FROM EMPLOYEE
+    WHERE ID = emp_id2;
+
+    salary_diff := salary1 - salary2;
+
+    DBMS_OUTPUT.PUT_LINE('Difference in salary: ' || salary_diff);
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        DBMS_OUTPUT.PUT_LINE('One or both employee IDs not found.');
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('An error occurred: ' || SQLERRM);
+END;
+/
+
+12:DECLARE
+    CURSOR high_salary_cursor IS
+        SELECT ID, NAME, SALARY
+        FROM EMPLOYEE
+        ORDER BY SALARY DESC
+        FETCH FIRST 10 ROWS ONLY;
+    emp_record EMPLOYEE%ROWTYPE;
+BEGIN
+    OPEN high_salary_cursor;
+    LOOP
+        FETCH high_salary_cursor INTO emp_record;
+        EXIT WHEN high_salary_cursor%NOTFOUND;
+        DBMS_OUTPUT.PUT_LINE('ID: ' || emp_record.ID || ', Name: ' || emp_record.NAME || ', Salary: ' || emp_record.SALARY);
+    END LOOP;
+    CLOSE high_salary_cursor;
+END;
+/
+
+
+13: CREATE OR REPLACE PROCEDURE display_employees_by_dept(dno IN NUMBER) IS
+BEGIN
+    FOR emp IN (SELECT ID, NAME, SALARY FROM EMPLOYEE WHERE DEPNO = dno) LOOP
+        DBMS_OUTPUT.PUT_LINE('ID: ' || emp.ID || ', Name: ' || emp.NAME || ', Salary: ' || emp.SALARY);
+    END LOOP;
+END;
+/
+
+BEGIN
+    display_employees_by_dept(&dno);
+END;
+/
+
+14: CREATE OR REPLACE FUNCTION get_employee_salary(emp_id IN NUMBER) RETURN NUMBER IS
+    emp_salary NUMBER;
+BEGIN
+    SELECT SALARY INTO emp_salary
+    FROM EMPLOYEE
+    WHERE ID = emp_id;
+
+    RETURN emp_salary;
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        RETURN NULL; -- Return NULL if no employee found
+    WHEN OTHERS THEN
+        RETURN NULL; -- Handle other exceptions
+END;
+/
+
+
+15: CREATE TABLE emp_trail (
+    operation VARCHAR2(10),
+    operation_date DATE,
+    emp_id NUMBER,
+    emp_name VARCHAR2(100)
+);
+
+CREATE OR REPLACE TRIGGER emp_audit_trail
+AFTER INSERT OR UPDATE OR DELETE ON EMPLOYEE
+FOR EACH ROW
+BEGIN
+    IF INSERTING THEN
+        INSERT INTO emp_trail (operation, operation_date, emp_id, emp_name)
+        VALUES ('INSERT', SYSDATE, :NEW.ID, :NEW.NAME);
+    ELSIF UPDATING THEN
+        INSERT INTO emp_trail (operation, operation_date, emp_id, emp_name)
+        VALUES ('UPDATE', SYSDATE, :NEW.ID, :NEW.NAME);
+    ELSIF DELETING THEN
+        INSERT INTO emp_trail (operation, operation_date, emp_id, emp_name)
+        VALUES ('DELETE', SYSDATE, :OLD.ID, :OLD.NAME);
+    END IF;
+END;
+/
+
+
+16: CREATE TABLE emp_sal_trail (
+    emp_id NUMBER,
+    emp_name VARCHAR2(100),
+    old_salary NUMBER,
+    new_salary NUMBER,
+    modification_date DATE
+);
+
+CREATE OR REPLACE TRIGGER emp_salary_audit
+BEFORE UPDATE OF SALARY ON EMPLOYEE
+FOR EACH ROW
+BEGIN
+    INSERT INTO emp_sal_trail (emp_id, emp_name, old_salary, new_salary, modification_date)
+    VALUES (:OLD.ID, :OLD.NAME, :OLD.SALARY, :NEW.SALARY, SYSDATE);
+END;
+/
+
+
+17: CREATE OR REPLACE TRIGGER prevent_salary_decrease
+BEFORE UPDATE OF SALARY ON EMPLOYEE
+FOR EACH ROW
+BEGIN
+    IF :NEW.SALARY < :OLD.SALARY THEN
+        RAISE_APPLICATION_ERROR(-20001, 'Cannot decrease salary.');
+    END IF;
+END;
+/
+
+18: CREATE OR REPLACE TRIGGER prevent_sunday_salary_update
+BEFORE UPDATE OF SALARY ON EMPLOYEE
+FOR EACH ROW
+BEGIN
+    IF TO_CHAR(SYSDATE, 'DY') = 'SUN' THEN
+        RAISE_APPLICATION_ERROR(-20002, 'Salary modification is not allowed on Sundays.');
+    END IF;
+END;
+/
+
+
+19: CREATE TABLE DEPARTMENT (
+    DeptNo NUMBER PRIMARY KEY,
+    Total_Sal NUMBER
+);
+
+CREATE OR REPLACE TRIGGER maintain_total_salary
+AFTER INSERT OR UPDATE OR DELETE ON EMPLOYEE
+FOR EACH ROW
+BEGIN
+    IF INSERTING THEN
+        UPDATE DEPARTMENT
+        SET Total_Sal = Total_Sal + :NEW.SALARY
+        WHERE DeptNo = :NEW.DEPNO;
+    ELSIF UPDATING THEN
+        UPDATE DEPARTMENT
+        SET Total_Sal = Total_Sal - :OLD.SALARY + :NEW.SALARY
+        WHERE DeptNo = :NEW.DEPNO;
+    ELSIF DELETING THEN
+        UPDATE DEPARTMENT
+        SET Total_Sal = Total_Sal - :OLD.SALARY
+        WHERE DeptNo = :OLD.DEPNO;
+    END IF;
+END;
+/
+
