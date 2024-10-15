@@ -1,0 +1,165 @@
+1: SET SERVEROUTPUT ON;
+DECLARE
+    num1 NUMBER;
+    num2 NUMBER;
+    greatest NUMBER;
+BEGIN
+    -- Prompting user for input
+    DBMS_OUTPUT.PUT_LINE('Enter first number:');
+    -- Assuming the user will input the first number
+    num1 := &num1;
+
+    DBMS_OUTPUT.PUT_LINE('Enter second number:');
+    -- Assuming the user will input the second number
+    num2 := &num2;
+
+    -- Finding the greatest number
+    IF num1 > num2 THEN
+        greatest := num1;
+    ELSE
+        greatest := num2;
+    END IF;
+
+    -- Outputting the result
+    DBMS_OUTPUT.PUT_LINE('The greatest number is: ' || greatest);
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('An error occurred: ' || SQLERRM);
+END;
+/
+
+2: DECLARE
+    num1 NUMBER;
+    num2 NUMBER;
+    num3 NUMBER;
+    greatest NUMBER;
+BEGIN
+    -- Prompting user for input
+    DBMS_OUTPUT.PUT_LINE('Enter first number:');
+    num1 := &num1;
+
+    DBMS_OUTPUT.PUT_LINE('Enter second number:');
+    num2 := &num2;
+
+    DBMS_OUTPUT.PUT_LINE('Enter third number:');
+    num3 := &num3;
+
+    -- Finding the greatest number
+    IF (num1 >= num2) AND (num1 >= num3) THEN
+        greatest := num1;
+    ELSIF (num2 >= num1) AND (num2 >= num3) THEN
+        greatest := num2;
+    ELSE
+        greatest := num3;
+    END IF;
+
+    -- Outputting the result
+    DBMS_OUTPUT.PUT_LINE('The greatest number is: ' || greatest);
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('An error occurred: ' || SQLERRM);
+END;
+/
+
+3: DECLARE
+    num1 NUMBER;
+    num2 NUMBER;
+BEGIN
+    -- Prompting user for input
+    DBMS_OUTPUT.PUT_LINE('Enter the first number:');
+    num1 := &num1;
+
+    DBMS_OUTPUT.PUT_LINE('Enter the second number:');
+    num2 := &num2;
+
+    -- Print numbers between num1 and num2
+    IF num1 < num2 THEN
+        FOR i IN num1 + 1 .. num2 - 1 LOOP
+            DBMS_OUTPUT.PUT_LINE(i);
+        END LOOP;
+    ELSIF num1 > num2 THEN
+        FOR i IN num2 + 1 .. num1 - 1 LOOP
+            DBMS_OUTPUT.PUT_LINE(i);
+        END LOOP;
+    ELSE
+        DBMS_OUTPUT.PUT_LINE('Both numbers are equal. No numbers in between.');
+    END IF;
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('An error occurred: ' || SQLERRM);
+END;
+/
+
+4: DECLARE
+    N NUMBER;
+    sum_series NUMBER := 0;
+BEGIN
+    -- Prompting user for input
+    DBMS_OUTPUT.PUT_LINE('Enter a number N:');
+    N := &N;
+
+    -- Calculate the sum of the series
+    FOR i IN 1 .. N LOOP
+        sum_series := sum_series + i;
+    END LOOP;
+
+    -- Output the result
+    DBMS_OUTPUT.PUT_LINE('The sum of the series 1 + 2 + ... + ' || N || ' is: ' || sum_series);
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('An error occurred: ' || SQLERRM);
+END;
+/
+
+5: DECLARE
+    marks NUMBER;
+    grade CHAR(1);
+BEGIN
+    -- Prompting user for input
+    DBMS_OUTPUT.PUT_LINE('Enter the marks (0-100):');
+    marks := &marks;
+
+    -- Determine the grade
+    IF marks >= 90 THEN
+        grade := 'A';
+    ELSIF marks >= 80 THEN
+        grade := 'B';
+    ELSIF marks >= 70 THEN
+        grade := 'C';
+    ELSIF marks >= 60 THEN
+        grade := 'D';
+    ELSIF marks >= 50 THEN
+        grade := 'E';
+    ELSE
+        grade := 'F';
+    END IF;
+
+    -- Output the result
+    DBMS_OUTPUT.PUT_LINE('The grade is: ' || grade);
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('An error occurred: ' || SQLERRM);
+END;
+/
+
+6: DECLARE
+    num NUMBER;
+    inverted_num NUMBER := 0;
+BEGIN
+    -- Prompting user for input
+    DBMS_OUTPUT.PUT_LINE('Enter a number to invert:');
+    num := &num;
+
+    -- Invert the number
+    WHILE num != 0 LOOP
+        inverted_num := inverted_num * 10 + MOD(num, 10);
+        num := FLOOR(num / 10);
+    END LOOP;
+
+    -- Output the result
+    DBMS_OUTPUT.PUT_LINE('The inverted number is: ' || inverted_num);
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('An error occurred: ' || SQLERRM);
+END;
+/
